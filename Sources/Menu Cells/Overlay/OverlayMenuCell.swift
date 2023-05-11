@@ -75,8 +75,8 @@ public class OverlayMenuCell: PagingMenuViewCell {
         return view
     }()
     
-    let highlightLabel = UILabel()
-    let titleLabel = UILabel()
+    public let highlightLabel = UILabel()
+    public let titleLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

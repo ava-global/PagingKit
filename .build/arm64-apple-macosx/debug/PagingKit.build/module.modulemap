@@ -1,0 +1,4 @@
+module PagingKit {
+    header "/Users/daisyfoto/Works/r-ket/libs/PagingKit/.build/arm64-apple-macosx/debug/PagingKit.build/PagingKit-Swift.h"
+    requires objc
+}

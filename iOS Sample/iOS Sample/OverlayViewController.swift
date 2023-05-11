@@ -29,24 +29,21 @@ class OverlayViewController: UIViewController {
     
     let dataSource: [(menu: String, content: UIViewController)] = ["Martinez", "Alfred", "Louis", "Justin", "Tim", "Deborah", "Michael", "Choi", "Hamilton", "Decker", "Johnson", "George"].map {
         let title = $0
-        let vc = UIStoryboard(name: "ContentTableViewController", bundle: nil).instantiateInitialViewController() as! ContentTableViewController
+        //let vc = UIStoryboard(name: "ContentTableViewController", bundle: nil).instantiateInitialViewController() as! ContentTableViewController
+        let vc = UIViewController()
+        vc.view.backgroundColor = UIColor.random
         return (menu: title, content: vc)
     }
 
     var menuViewController: PagingMenuViewController!
     var contentViewController: PagingContentViewController!
+    var overlayFocusView = OverlayFocusView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        menuViewController?.register(type: OverlayMenuCell.self, forCellWithReuseIdentifier: "identifier")
-        menuViewController?.registerFocusView(view: OverlayFocusView(), isBehindCell: true)
-        menuViewController?.reloadData(with: 0, completionHandler: { [weak self] (vc) in
-            (self?.menuViewController.currentFocusedCell as! OverlayMenuCell)
-                .updateMask(animated: false)
-        })
-        
-        contentViewController?.scrollView.bounces = true
-        contentViewController?.reloadData(with: 0)
+        initOverlayFocusView()
+        initMenuViewController()
+        initContentViewController()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -62,21 +59,49 @@ class OverlayViewController: UIViewController {
     }
 }
 
+extension OverlayViewController {
+    func initOverlayFocusView() {
+        overlayFocusView.contentBackgroundColor = UIColor(red: 0.627, green: 0.506, blue: 0.882, alpha: 1)
+    }
+    
+    func initMenuViewController() {
+        menuViewController?.register(type: OverlayMenuCell.self,
+                                     forCellWithReuseIdentifier: "OverlayMenuCellIdentifier")
+        menuViewController?.registerFocusView(view: overlayFocusView, isBehindCell: true)
+        menuViewController?.reloadData(with: 0, completionHandler: { [weak self] (vc) in
+            (self?.menuViewController.currentFocusedCell as! OverlayMenuCell)
+                .updateMask(animated: false)
+        })
+    }
+    
+    func initContentViewController() {
+        contentViewController?.scrollView.bounces = true
+        contentViewController?.reloadData(with: 0)
+    }
+}
 extension OverlayViewController: PagingMenuViewControllerDataSource {
     func menuViewController(viewController: PagingMenuViewController, cellForItemAt index: Int) -> PagingMenuViewCell {
-        let cell = viewController.dequeueReusableCell(withReuseIdentifier: "identifier", for: index)  as! OverlayMenuCell
+        let cell = viewController.dequeueReusableCell(withReuseIdentifier: "OverlayMenuCellIdentifier",
+                                                      for: index)  as! OverlayMenuCell
+        cell.titleLabel.textAlignment = .center
+        cell.highlightLabel.textAlignment = .center
         cell.configure(title: dataSource[index].menu)
         cell.referencedFocusView = viewController.focusView
         cell.referencedMenuView = viewController.menuView
         cell.updateMask()
+        
+        //FIXME: Remove me
+        cell.layer.borderColor = UIColor.red.cgColor
+        cell.layer.borderWidth = 1
         return cell
     }
 
     
-    func menuViewController(viewController: PagingMenuViewController, widthForItemAt index: Int) -> CGFloat {
-        return OverlayMenuCell
-            .sizingCell
-            .calculateWidth(from: viewController.view.bounds.height, title: dataSource[index].menu)
+    func menuViewController(viewController: PagingMenuViewController,
+                            widthForItemAt index: Int) -> CGFloat {
+        let offsetLR: CGFloat = 10
+        return OverlayMenuCell.sizingCell.calculateWidth(from: viewController.view.bounds.height,
+                                                         title: dataSource[index].menu) + offsetLR
     }
     
     func numberOfItemsForMenuViewController(viewController: PagingMenuViewController) -> Int {
@@ -90,17 +115,23 @@ extension OverlayViewController: PagingContentViewControllerDataSource {
         return dataSource.count
     }
     
-    func contentViewController(viewController: PagingContentViewController, viewControllerAt index: Int) -> UIViewController {
+    func contentViewController(viewController: PagingContentViewController,
+                               viewControllerAt index: Int) -> UIViewController {
         return dataSource[index].content
     }
 }
 
 extension OverlayViewController: PagingMenuViewControllerDelegate {
-    func menuViewController(viewController: PagingMenuViewController, didSelect page: Int, previousPage: Int) {
-        contentViewController?.scroll(to: page, animated: true)
+    func menuViewController(viewController: PagingMenuViewController,
+                            didSelect page: Int,
+                            previousPage: Int) {
+        contentViewController?.scroll(to: page,
+                                      animated: true)
     }
     
-    func menuViewController(viewController: PagingMenuViewController, willAnimateFocusViewTo index: Int, with coordinator: PagingMenuFocusViewAnimationCoordinator) {
+    func menuViewController(viewController: PagingMenuViewController,
+                            willAnimateFocusViewTo index: Int,
+                            with coordinator: PagingMenuFocusViewAnimationCoordinator) {
         viewController.visibleCells.compactMap { $0 as? OverlayMenuCell }.forEach { cell in
             cell.updateMask()
         }
@@ -112,17 +143,34 @@ extension OverlayViewController: PagingMenuViewControllerDelegate {
         }, completion: nil)
     }
     
-    func menuViewController(viewController: PagingMenuViewController, willDisplay cell: PagingMenuViewCell, forItemAt index: Int) {
+    func menuViewController(viewController: PagingMenuViewController,
+                            willDisplay cell: PagingMenuViewCell,
+                            forItemAt index: Int) {
         (cell as? OverlayMenuCell)?.updateMask()
     }
 }
 
 extension OverlayViewController: PagingContentViewControllerDelegate {
-    func contentViewController(viewController: PagingContentViewController, didManualScrollOn index: Int, percent: CGFloat) {
-        menuViewController.scroll(index: index, percent: percent, animated: false)
+    func contentViewController(viewController: PagingContentViewController,
+                               didManualScrollOn index: Int,
+                               percent: CGFloat) {
+        menuViewController.scroll(index: index,
+                                  percent: percent,
+                                  animated: false)
         menuViewController.visibleCells.forEach {
-            let cell = $0 as! OverlayMenuCell
+            guard let cell = $0 as? OverlayMenuCell else { return }
             cell.updateMask()
         }
+    }
+}
+
+extension UIColor {
+    static var random: UIColor {
+        return UIColor(
+            red: .random(in: 0...1),
+            green: .random(in: 0...1),
+            blue: .random(in: 0...1),
+            alpha: 1.0
+        )
     }
 }
