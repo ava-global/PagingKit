@@ -65,7 +65,7 @@ extension OverlayViewController {
     }
     
     func initMenuViewController() {
-        menuViewController.cellSpacing = 20
+        menuViewController.cellSpacing = 10
         menuViewController?.register(type: OverlayMenuCell.self,
                                      forCellWithReuseIdentifier: "OverlayMenuCellIdentifier")
         menuViewController?.registerFocusView(view: overlayFocusView, isBehindCell: true)
