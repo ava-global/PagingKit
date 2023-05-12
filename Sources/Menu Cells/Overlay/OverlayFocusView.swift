@@ -62,7 +62,7 @@ public class OverlayFocusView: UIView {
             toItem: contentView,
             attribute: .trailing,
             multiplier: 1,
-            constant: 8)
+            constant: 0)
         let leadingConstraint = NSLayoutConstraint(
             item: contentView,
             attribute: .leading,
@@ -70,7 +70,7 @@ public class OverlayFocusView: UIView {
             toItem: self,
             attribute: .leading,
             multiplier: 1,
-            constant: 8)
+            constant: 0)
         let centerConstraint = NSLayoutConstraint(
             item: self,
             attribute: .centerY,

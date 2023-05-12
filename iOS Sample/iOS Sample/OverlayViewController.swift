@@ -65,6 +65,7 @@ extension OverlayViewController {
     }
     
     func initMenuViewController() {
+        menuViewController.cellSpacing = 20
         menuViewController?.register(type: OverlayMenuCell.self,
                                      forCellWithReuseIdentifier: "OverlayMenuCellIdentifier")
         menuViewController?.registerFocusView(view: overlayFocusView, isBehindCell: true)
@@ -100,7 +101,7 @@ extension OverlayViewController: PagingMenuViewControllerDataSource {
     
     func menuViewController(viewController: PagingMenuViewController,
                             widthForItemAt index: Int) -> CGFloat {
-        let offsetLR: CGFloat = 10
+        let offsetLR: CGFloat = 0
         return OverlayMenuCell.sizingCell.calculateWidth(from: viewController.view.bounds.height,
                                                          title: dataSource[index].menu) + offsetLR
     }
