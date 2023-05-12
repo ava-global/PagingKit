@@ -79,6 +79,7 @@ extension OverlayViewController {
         contentViewController?.reloadData(with: 0)
     }
 }
+
 extension OverlayViewController: PagingMenuViewControllerDataSource {
     func menuViewController(viewController: PagingMenuViewController, cellForItemAt index: Int) -> PagingMenuViewCell {
         let cell = viewController.dequeueReusableCell(withReuseIdentifier: "OverlayMenuCellIdentifier",

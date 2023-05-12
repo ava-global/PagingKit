@@ -118,7 +118,12 @@ public class OverlayMenuCell: PagingMenuViewCell {
         }
     }
     
-    public func calculateWidth(from height: CGFloat, title: String) -> CGFloat {
+    public func calculateWidth(from height: CGFloat, title: String, font: UIFont? = nil) -> CGFloat {
+        if let font = font {
+            titleLabel.font = font
+            highlightLabel.font = font
+        }
+        
         configure(title: title)
         var referenceSize = UIView.layoutFittingCompressedSize
         referenceSize.height = height
