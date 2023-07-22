@@ -148,7 +148,7 @@ extension OverlayMenuCell {
                 toItem: $0,
                 attribute: .trailing,
                 multiplier: 1,
-                constant: 24)
+                constant: 20)
             let leadingConstraint = NSLayoutConstraint(
                 item: $0,
                 attribute: .leading,
@@ -156,7 +156,7 @@ extension OverlayMenuCell {
                 toItem: self,
                 attribute: .leading,
                 multiplier: 1,
-                constant: 24)
+                constant: 20)
             let bottomConstraint = NSLayoutConstraint(
                 item: self,
                 attribute: .top,
